@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "sernn"
+version = "0.1.0"
+description = "Self-Expanding RNNs"
+authors = ["tarolling <benitojoens@gmail.com>"]
+license = "GPL-3.0"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+jax = {extras = ["cuda12"], version = "^0.4.34"}
+tensorflow = {extras = ["and-cuda"], version = "^2.17.0"}
+flax = "^0.9.0"
+compose = "^1.6.2"
+tensorrt = "^10.5.0"
+confuse = "^2.0.1"
+rtpt = "^0.0.4"
+datasets = "^3.0.1"
+pillow = "^10.4.0"
+polars = "^1.14.0"
+ipykernel = "^6.29.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
