@@ -36,14 +36,13 @@ class ActivationNetwork(keras.layers.Layer):
         super().__init__()
         self.layer1 = keras.layers.Dense(input_dim * 2, activation="relu")
         self.layer2 = keras.layers.Dense(input_dim, activation="relu")
-        self.layer3 = keras.layers.Dense(1)
+        self.layer3 = keras.layers.Dense(1, activation="sigmoid")
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
         original_shape = inputs.shape
         if len(original_shape) > 2:
             inputs = tf.reshape(inputs, (-1, original_shape[-1]))
-        result = self.layer3(nn.relu(self.layer2(nn.relu(self.layer1(inputs)))))
-        result = tf.nn.sigmoid(result)
+        result = self.layer3(self.layer2(self.layer1(inputs)))
         result = tf.reshape(result, (original_shape[:-1] + (1,),))
         result = tf.squeeze(result, [-1])
         return result
@@ -76,14 +75,22 @@ class Identity(keras.layers.Layer):
 class minGRU(keras.layers.Layer):
     def __init__(self, input_dim: int, expansion_factor: float = 1.0):
         super().__init__()
-        dim_inner = int(input_dim * expansion_factor)
-        self.to_hidden_and_gate = keras.layers.Dense(dim_inner, use_bias=False)
+        self.input_dim = input_dim
+        self.expansion_factor = expansion_factor
+        self.to_hidden_and_gate = None
+        self.to_out = None
+        self.activation_net = None
+
+    def build(self, input_shape):
+        dim_inner = int(self.input_dim * self.expansion_factor)
+        self.to_hidden_and_gate = keras.layers.Dense(dim_inner * 2, use_bias=False)
         self.to_out = (
-            keras.layers.Dense(input_dim, use_bias=False)
-            if expansion_factor != 1.0
+            keras.layers.Dense(self.input_dim, use_bias=False)
+            if self.expansion_factor != 1.0
             else Identity()
         )
         self.activation_net = ActivationNetwork(dim_inner)
+        super().build(input_shape)
 
     def call(
         self,
