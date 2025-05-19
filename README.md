@@ -1,6 +1,6 @@
 # SERNN
 
-Self-Expanding Recurrent Neural Networks
+Toward Self-Expanding Recurrent Neural Networks
 
 ## Usage
 
